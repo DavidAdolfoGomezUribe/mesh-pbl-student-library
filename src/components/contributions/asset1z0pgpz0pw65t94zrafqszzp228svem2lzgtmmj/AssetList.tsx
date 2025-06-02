@@ -34,7 +34,7 @@ interface BlockfrostAssetResponse {  // This is the blocfrost response.
 
 interface AssetItemProps {
   unit: string;
-  fingerprint: string;
+  
 }
 
 // -------------------------------------------------------------
@@ -42,10 +42,11 @@ interface AssetItemProps {
 // , after that, extracts the img url from the metadata.
 // -------------------------------------------------------------
 
-const AssetItem: React.FC<AssetItemProps> = ({ unit, fingerprint }) => {
+const AssetItem: React.FC<AssetItemProps> = ({ unit }) => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [apiFingerprint, setApiFingerprint] = useState<string | null>(null);
 
   useEffect(() => {
     if (!unit) return;
@@ -69,6 +70,8 @@ const AssetItem: React.FC<AssetItemProps> = ({ unit, fingerprint }) => {
         }
 
         const data: BlockfrostAssetResponse = await res.json();
+
+        setApiFingerprint(data.fingerprint);
 
         if (
           data.onchain_metadata &&
@@ -98,7 +101,7 @@ const AssetItem: React.FC<AssetItemProps> = ({ unit, fingerprint }) => {
       <p className="text-center">
         <strong >Fingerprint:</strong> 
       </p>
-      <p className="truncate text-center">{fingerprint}</p>
+      <p className="truncate text-center">{apiFingerprint}</p>
 
       {loading && (
         <p className="text-sm text-gray-500">Loading metadata…</p>
@@ -151,18 +154,22 @@ export default function AssetList() {
   };
 
   return (
+
     <div className="p-4">
       <p className="mb-2 text-sm text-gray-700">
         {wallet.connected ? (
           <p>:D</p> //you can delete this
         ) : (
-          <p>D:</p>
+          <>
+            <p> D: </p>
+          </>
+          
         )}
       </p>
 
       {wallet.connected ? (
         <>
-
+          {/* <pre>{JSON.stringify(assets, null, 2)}</pre> */}
           {/* <pre>{JSON.stringify(wallet, null, 2)}</pre> */}
           <h1 className="text-4xl uppercase"> <strong>Selected wallet</strong> {wallet.name} </h1>
           <h1 className="text-3x1"> <strong>Conection status:</strong> {wallet.connected ? "True": "False"} </h1>
@@ -180,7 +187,7 @@ export default function AssetList() {
             <>
            <ul className="bg-252525 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {assets?.slice(0, visibleCount).map((asset) => (
-                <AssetItem key={asset.unit} unit={asset.unit} fingerprint={asset.fingerprint} />
+                <AssetItem key={asset.unit} unit={asset.unit} />
               ))}
           </ul>
               {visibleCount < (assets?.length ?? 0) && (
