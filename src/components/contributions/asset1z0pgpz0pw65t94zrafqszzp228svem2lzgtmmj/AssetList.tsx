@@ -156,7 +156,7 @@ export default function AssetList() {
         {wallet.connected ? (
           <p>:D</p> //you can delete this
         ) : (
-          "No está conectado"
+          <p>D:</p>
         )}
       </p>
 
